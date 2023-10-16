@@ -1,0 +1,37 @@
+#board {
+    display: grid;
+    grid-template-columns: repeat(10, 55px);
+    grid-template-rows: repeat(10, 55px);
+    width: 550px;
+    /* Set the width of the entire board */
+    height: 550px;
+    /* Set the height of the entire board */
+    background-color: #97DEE7;
+    /* border: 2px solid black; */
+    position: relative;
+
+}
+
+#board .tile {
+    width: 55px;
+    height: 55px;
+}
+
+.container {
+    position: relative;
+}
+
+img {
+    position: absolute;
+
+    z-index: 1;
+
+    /* width: 165px; */
+    height: 55px;
+}
+
+.cell {
+    width: 55px;
+    height: 55px;
+    position: relative;
+}
