@@ -1,23 +1,33 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 import PlayerModel from './player.js';
+
+interface ShipCell {
+    id: string;
+    cells: number[][];
+}
 interface Ship extends Document {
-    ship1: string[];
-    ship2: string[];
-    ship3: string[];
+    ship1: ShipCell;
+    ship2: ShipCell;
+    ship3: ShipCell;
     owner: mongoose.Types.ObjectId;
     count: number;
 }
 
+const shipCellSchema: Schema<ShipCell> = new Schema({
+    id: String,
+    cells: [[Number]],
+});
+
 const shipSchema: Schema<Ship> = new Schema({
-    ship1: [String],
-    ship2: [String],
-    ship3: [String],
+    ship1: shipCellSchema,
+    ship2: shipCellSchema,
+    ship3: shipCellSchema,
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PlayerModel'
     },
     count: Number,
-})
+});
 
 shipSchema.set('toJSON', {
     transform: (document, returnedObject) => {

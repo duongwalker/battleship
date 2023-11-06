@@ -8,9 +8,10 @@ interface PlayerObject {
 }
 
 interface ShipObject {
-    ship1: Types.Array<string>;
-    ship2: Types.Array<string>;
-    ship3: Types.Array<string>;
+    id: string
+    cells: [number, number][]
+    count: number
+    playerId: any
 }
 
 
@@ -22,6 +23,17 @@ interface SavedShipData {
     count: number;
   }
 
+interface ShootedShip {
+    id: string;
+    playerId: string;
+}
+
+interface ShootedCell {
+    cell: [number, number]
+    playerId: string;
+}
+
+
 export interface ServerToClientEvents {
     noArg: () => void;
     basicEmit: (a: number, b: string, c: Buffer) => void;
@@ -29,16 +41,20 @@ export interface ServerToClientEvents {
     savingInfoResult: (info: string) => void
     shootResult: (event: string) => void;
     // checkEvent:(event: string) => void;
-
+    opponentShipData: any;
+    // shootData: [number, number];
+    sinkedShip: (event: []) => void
+    checkResult:(event: string) => void;
 }
 
 export interface ClientToServerEvents {
     hello: () => void;
-    joinGameRoom: (id: string, player: PlayerObject, ship: ShipObject) => void;
+    joinGameRoom: (id: string, player: PlayerObject, ship: Array<ShipObject>) => void;
     joinGameState: (joined: boolean) => void;
     shootEvent: (event: string) => void;
-    shootResult: (event: string) => void;
+    shootResult: (event: ShootedCell) => void;
     checkEvent:(event: string) => void;
+    
 }
 
 export interface InterServerEvents {
@@ -48,6 +64,7 @@ export interface InterServerEvents {
 export interface SocketData {
     gameRoomId: string;
     playerInfo: object;
-    ship: object;
+    ships: ShipObject[];
     reservedSquares: string[];
+    opponentShip: any
 }

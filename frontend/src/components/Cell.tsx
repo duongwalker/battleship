@@ -1,38 +1,51 @@
-import { useState } from "react"
+import { useState, useEffect, useContext } from "react"
 import Ship from './Ship';
 import { useDrop } from 'react-dnd';
 import './Board.css'
+// import { SocketContext } from '../context/SocketContext';
+import socket from "./socket";
+import { cellShootedState, playerIdState, cellReservationState } from "./State";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 interface CellProps {
-    value: String;
+    id: any
+    value: [number, number];
     children?: React.ReactNode;
+    className: string
 }
 
-const Cell: React.FC<CellProps> = ({ value }) => {
+type Cell = [number, number]
+
+interface ShootedCell {
+    cell: [number, number],
+    playerId: any
+}
+
+const Cell: React.FC<CellProps> = ({ id, value, children, className }) => {
     const [reserved, setReserved] = useState(false)
-    const handleClicking = () => {
-        setReserved(true)
+    const [shootCell, setShootCell] = useRecoilState<Cell>(cellShootedState)
+    const playerId = useRecoilValue(playerIdState)
+    const shipReservation = useRecoilValue(cellReservationState)
+
+    const handleClicking = async () => {
+        if (!reserved) {
+            setReserved(true);
+            console.log('God damnnn')
+            await socket.emit('shootEvent', value)
+        }
     }
 
-    // const [{ isOver }, drop] = useDrop(() => ({
-    //     accept: "ship",
-    //     drop: (item: any) => addShipToBoard(item.id),
-    //     collect: (monitor) => ({
-    //         isOver: !!monitor.isOver(),
-    //     })
-    // }))
+    // useEffect(() => {
+    //     socket.on("shootResult", (data) => {
+    //         setShootCell(data)
+    //     });
+    // }, [socket])
 
-    // const addShipToBoard = (id: any) => {
-    //     const ship = shipList.find((ship) => id === ship.id)
-    //     if (ship) {
-    //         ship.width = 320
-    //         ship.height = 50
-    //         setBoard(ship)
-    //     }
-    // }
+    const clickable = className === 'opponentCell';
+
     return (
-        <div onClick={handleClicking} className="cell">
-            {/* {board && <Ship id={board.id} url={board.img} height={board.height} width={board.width} />} */}
+        <div id = {id} onClick={clickable ? handleClicking : undefined} className={className} >
+            {reserved ? '🔴' : children}
         </div>
     )
 }

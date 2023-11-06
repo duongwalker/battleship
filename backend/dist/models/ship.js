@@ -1,8 +1,12 @@
 import mongoose, { Schema } from 'mongoose';
+const shipCellSchema = new Schema({
+    id: String,
+    cells: [[Number]],
+});
 const shipSchema = new Schema({
-    ship1: [String],
-    ship2: [String],
-    ship3: [String],
+    ship1: shipCellSchema,
+    ship2: shipCellSchema,
+    ship3: shipCellSchema,
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PlayerModel'

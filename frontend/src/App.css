@@ -1,6 +1,20 @@
-.app {
-    display: grid;
-    place-content: center;
+.App {
+    display: flex;
+    flex-direction: row; /* Horizontal arrangement */
+    justify-content: space-around; /* Space between boards */
+    align-items: center; /* Center vertically */
     height: 100vh;
-    background-color: #202020;
+    background-color: white;
 }
+
+.board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center horizontally within each board */
+}
+
+.disabled-button {
+    pointer-events: none; /* Disable pointer events */
+    
+    filter: blur(3px); /* Apply a blur effect */
+  }
