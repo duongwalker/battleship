@@ -22,13 +22,15 @@ interface Ship {
 interface OpponentShipInterface {
   id: string;
   cells: [number, number][]
-  count: number
+  count: number,
+  isHorizontal: boolean
 }
 
 interface ShipCells {
   id: string,
   cells: number[][],
   count: number,
+  isHorizontal: boolean
 }
 
 interface ShootedShip {
@@ -123,7 +125,7 @@ const OpponentBoard = () => {
         {board}
         {opponentShipList && opponentShipList.map((ship, index) => {
           return (
-            <OpponentShip key={ship.id} id={ship.id} url={shipList[index].img} width={shipList[index].width} location={ship.cells[0]} shipRefs={shipRefs} />
+            <OpponentShip key={ship.id} id={ship.id} url={shipList[index].img} width={shipList[index].width} location={ship.cells[0]} shipRefs={shipRefs} isHorizontal = {ship.isHorizontal}/>
           )
         })}
 

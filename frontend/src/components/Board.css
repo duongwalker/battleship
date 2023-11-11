@@ -28,7 +28,7 @@
     position: relative;
 }
 
-img {
+img, span {
     position: absolute;
     z-index: 1;
     height: 55px;

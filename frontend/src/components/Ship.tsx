@@ -17,6 +17,7 @@ interface ShipCells {
     id: string,
     cells: number[][],
     count: number,
+    isHorizontal: boolean
 }
 
 // interface ShootedCell {
@@ -37,7 +38,8 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
     }))
     const [rotationAngle, setRotationAngle] = useState(0);
     const [isRotated, setIsRotated] = useState(false);
-    const[playerId, setPlayerId] = useRecoilState(playerIdState);
+    const [playerId, setPlayerId] = useRecoilState(playerIdState);
+    const [isHorizontal, setIsHorizontal] = useState(true)
     useEffect(() => {
         const newPlayerId = uuidv4(); // Your logic to generate playerId
         setPlayerId(newPlayerId);
@@ -62,15 +64,16 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
         const initialReservedCells: number[][] = [];
         for (let i = 0; i < width / 55; i++) {
             initialReservedCells.push([i, 0]);
-        }    
+        }
         setCellsReserved([
             ...cellsReserved,
             {
-              id: id,
-              cells: initialReservedCells,
-              count: initialReservedCells.length,
+                id: id,
+                cells: initialReservedCells,
+                count: initialReservedCells.length,
+                isHorizontal: isHorizontal
             }
-          ])
+        ])
     }, []);
 
     useEffect(() => {
@@ -94,39 +97,102 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
         setCellsReserved(updatedCellsReserved)
     }
 
+    const handleContextMenu = (e: React.MouseEvent) => {
+        console.log('Right click')
+        e.preventDefault(); // Prevent the default context menu
+        setRotationAngle(rotationAngle + 90);
+    };
+
     const offsetParent = boardElement || undefined
+    // useEffect(() => {
+    //     const isMoved = cellsReserved.find((ship) => ship.id === id);
+    //     if (isMoved) {
+    //         setIsHorizontal(isMoved.isHorizontal);
+    //     }
+    // }, [isHorizontal]);
+
     const handleDrag = (e: any, ui: any) => {
         const { x, y } = ui;
         const translatedX = x / 55;
         const translatedY = y / 55;
         const reservedCells: CellArray[] = [];
-        for (let i = 0; i < width / 55; i++) {
-            reservedCells.push([translatedX + i, translatedY]);
+        if (e.button === 2) {
+            e.preventDefault()
+            if (isHorizontal === true) {
+                console.log("chuot phai ne")
+                setRotationAngle(rotationAngle - 90);
+                setIsHorizontal(prevState => !prevState)
+                for (let i = 0; i < width / 55; i++) {
+                    reservedCells.push([translatedX + width / 55 - 1, translatedY + i]);
+                }
+            }
+            else {
+                setRotationAngle(rotationAngle + 90)
+                setIsHorizontal(prevState => !prevState)
+
+                for (let i = 0; i < width / 55; i++) {
+                    reservedCells.push([translatedX + i, translatedY]);
+                }
+            }
         }
+        else {
+
+            if (isHorizontal === true) {
+                for (let i = 0; i < width / 55; i++) {
+                    reservedCells.push([translatedX + i, translatedY]);
+                }
+            }
+            else {
+                console.log('Dang move trong tinh trang vertical')
+                for (let i = 0; i < width / 55; i++) {
+                    reservedCells.push([translatedX + i, translatedY + width / 55 - 1]);
+                }
+            }
+        }
+
 
         const isMoved = cellsReserved.find((ship) => (ship.id === id))
         if (isMoved) {
-            const reservedCellsObject = { cells: reservedCells }
-            updateShipCells(id, reservedCellsObject)
+            console.log('Day la isMove.isHorizontal')
+            console.log(isMoved.isHorizontal)
+            const reservedCellsObject = { cells: reservedCells };
+            setCellsReserved((prevCellsReserved) => {
+                const updatedCellsReserved = prevCellsReserved.map((ship) =>
+                    ship.id === id ? { ...ship, ...reservedCellsObject, isHorizontal: isHorizontal } : ship
+                );
+                return updatedCellsReserved;
+            });
+
+
         }
         else {
-            setCellsReserved([...cellsReserved, {
-                id: id,
-                cells: reservedCells,
-                count: reservedCells.length,
-            }]);
+            console.log('day la isHorizontal')
+            console.log(isHorizontal)
+            setCellsReserved((prevCellsReserved) => [
+                ...prevCellsReserved,
+                {
+                    id: id,
+                    cells: reservedCells,
+                    count: reservedCells.length,
+                    isHorizontal: isHorizontal,
+                },
+            ]);
         }
         console.log(cellsReserved)
     };
 
-    const handleOnclick = () => {
-        // console.log('Quay 90 do ne')
-        // setIsRotated(!isRotated);
-    }
     return (
-        <Draggable grid={[55, 55]} bounds="parent" offsetParent={offsetParent} onMouseDown={(e) => e.preventDefault()} positionOffset={{ x: 0, y: 0 }} onStop={handleDrag} >
-            <img ref={(element) => drag(element)} src={url} width={width} height={50} style={{ border: "0px" }} alt='board-1' />
+        // <Draggable grid={[55, 55]} bounds="parent" offsetParent={offsetParent} onMouseDown={(e) => e.preventDefault()} positionOffset={{ x: 0, y: 0 }} onStop={handleDrag} allowAnyClick={true}>
+        //     <span>
+        //         <img ref={(element) => drag(element)} src={url} width={width} height={50} alt='board-1' style={{ border: "0px", transform: `rotate(${rotationAngle}deg)`, transformOrigin: `${width-27.5}px 27.5px`, transition: 'transform 0.2s' }} />
+        //     </span>
+        // </Draggable>
+        <Draggable grid={[55, 55]} offsetParent={offsetParent} onMouseDown={(e) => e.preventDefault()} positionOffset={{ x: 0, y: 0 }} onStop={handleDrag} allowAnyClick={true}>
+            <span ref={(element) => drag(element)} onContextMenu={(e) => e.preventDefault()}>
+                <img src={url} width={width} height={50} alt='board-1' style={{ border: "0px", transform: `rotate(${rotationAngle}deg)`, transformOrigin: `${width - 27.5}px 27.5px`, transition: 'transform 0.2s' }} />
+            </span>
         </Draggable>
+
     )
 }
 

@@ -3,7 +3,8 @@ import { atom, useRecoilState } from 'recoil';
 interface ShipCells {
   id: string,
   cells: number[][],
-  count: number
+  count: number,
+  isHorizontal: boolean
 }
 
 // interface ShootedCell {

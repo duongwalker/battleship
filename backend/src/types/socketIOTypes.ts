@@ -11,7 +11,7 @@ interface ShipObject {
     id: string
     cells: [number, number][]
     count: number
-    playerId: any
+    isHorizontal: boolean
 }
 
 
