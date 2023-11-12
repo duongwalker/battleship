@@ -104,12 +104,7 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
     };
 
     const offsetParent = boardElement || undefined
-    // useEffect(() => {
-    //     const isMoved = cellsReserved.find((ship) => ship.id === id);
-    //     if (isMoved) {
-    //         setIsHorizontal(isMoved.isHorizontal);
-    //     }
-    // }, [isHorizontal]);
+
 
     const handleDrag = (e: any, ui: any) => {
         const { x, y } = ui;
@@ -121,14 +116,14 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
             if (isHorizontal === true) {
                 console.log("chuot phai ne")
                 setRotationAngle(rotationAngle - 90);
-                setIsHorizontal(prevState => !prevState)
+                setIsHorizontal(prevState => false)
                 for (let i = 0; i < width / 55; i++) {
                     reservedCells.push([translatedX + width / 55 - 1, translatedY + i]);
                 }
             }
             else {
                 setRotationAngle(rotationAngle + 90)
-                setIsHorizontal(prevState => !prevState)
+                setIsHorizontal(prevState => true)
 
                 for (let i = 0; i < width / 55; i++) {
                     reservedCells.push([translatedX + i, translatedY]);
@@ -145,20 +140,18 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
             else {
                 console.log('Dang move trong tinh trang vertical')
                 for (let i = 0; i < width / 55; i++) {
-                    reservedCells.push([translatedX + i, translatedY + width / 55 - 1]);
+                    reservedCells.push([translatedX + width / 55 - 1, translatedY + i]);
                 }
             }
         }
 
-
+        //check xem thuyen nao vua dc move
         const isMoved = cellsReserved.find((ship) => (ship.id === id))
         if (isMoved) {
-            console.log('Day la isMove.isHorizontal')
-            console.log(isMoved.isHorizontal)
-            const reservedCellsObject = { cells: reservedCells };
+            const reservedCellsObject = reservedCells;
             setCellsReserved((prevCellsReserved) => {
                 const updatedCellsReserved = prevCellsReserved.map((ship) =>
-                    ship.id === id ? { ...ship, ...reservedCellsObject, isHorizontal: isHorizontal } : ship
+                    ship.id === id ? { ...ship, cells: reservedCellsObject, isHorizontal: isHorizontal } : ship
                 );
                 return updatedCellsReserved;
             });
@@ -166,8 +159,6 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
 
         }
         else {
-            console.log('day la isHorizontal')
-            console.log(isHorizontal)
             setCellsReserved((prevCellsReserved) => [
                 ...prevCellsReserved,
                 {
@@ -180,13 +171,19 @@ const Ship: React.FC<ShipProps> = ({ id, url, width }) => {
         }
         console.log(cellsReserved)
     };
+    useEffect(() => {
+        const isMoved = cellsReserved.find((ship) => ship.id === id);
+        if (isMoved) {
+            setCellsReserved((prevCellsReserved) => {
+                const updatedCellsReserved = prevCellsReserved.map((ship) =>
+                    ship.id === id ? { ...ship, isHorizontal: isHorizontal } : ship
+                );
+                return updatedCellsReserved;
+            });
+        }
+    }, [isHorizontal]);
 
     return (
-        // <Draggable grid={[55, 55]} bounds="parent" offsetParent={offsetParent} onMouseDown={(e) => e.preventDefault()} positionOffset={{ x: 0, y: 0 }} onStop={handleDrag} allowAnyClick={true}>
-        //     <span>
-        //         <img ref={(element) => drag(element)} src={url} width={width} height={50} alt='board-1' style={{ border: "0px", transform: `rotate(${rotationAngle}deg)`, transformOrigin: `${width-27.5}px 27.5px`, transition: 'transform 0.2s' }} />
-        //     </span>
-        // </Draggable>
         <Draggable grid={[55, 55]} offsetParent={offsetParent} onMouseDown={(e) => e.preventDefault()} positionOffset={{ x: 0, y: 0 }} onStop={handleDrag} allowAnyClick={true}>
             <span ref={(element) => drag(element)} onContextMenu={(e) => e.preventDefault()}>
                 <img src={url} width={width} height={50} alt='board-1' style={{ border: "0px", transform: `rotate(${rotationAngle}deg)`, transformOrigin: `${width - 27.5}px 27.5px`, transition: 'transform 0.2s' }} />

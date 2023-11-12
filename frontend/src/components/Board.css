@@ -44,6 +44,7 @@ img, span {
     width: 55px;
     height: 55px;
     position: relative;
+    background-color: #97DEE7;
 }
 
 .opponentCell {

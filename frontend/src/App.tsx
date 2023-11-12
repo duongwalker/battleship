@@ -8,6 +8,8 @@ import { useState, useEffect } from 'react'
 import Board from './components/Board';
 import OpponentBoard from './components/OpponentBoard';
 import socket from './components/socket';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './components/Home';
 // import { SocketContext, socket } from './context/SocketContext';
 
 function App() {
@@ -58,41 +60,49 @@ function App() {
     "ship3": ["I8", "I9"]
   }
 
-  const joinRoom = async () => {
+  const joinRoom = () => {
     if (username !== "" && room !== "") {
-      await socket.emit('joinGameRoom', room, username, cellsReservation);
+      socket.emit('joinGameRoom', room, username, cellsReservation);
     }
   };
 
   return (
-      <DndProvider backend={HTML5Backend}>
-        <div className="App">
-          <div className="board-container">
-            <Board />
-          </div>
+    <Router>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/game-room' element={
+          <DndProvider backend={HTML5Backend}>
+            <div className="App">
+              <div className="board-container">
+                <Board />
+              </div>
 
-          <div className="board-container">
-            <OpponentBoard />
-          </div>
-        </div>
+              <div className="board-container">
+                <OpponentBoard />
+              </div>
+            </div>
 
 
-        <div>
-          <input type="text"
-            placeholder="Room ID..."
-            onChange={(event) => {
-              setRoom(event.target.value);
-            }} />
-          <input
-            type="text"
-            placeholder="Name..."
-            onChange={(event) => {
-              setUsername(event.target.value);
-            }}
-          />
-          <button className={isButtonClickable ? '' : 'disabled-button'} onClick={isButtonClickable ? handleButtonClick : undefined} >Start game</button>
-        </div>
-      </DndProvider>
+            <div>
+              <input type="text"
+                placeholder="Room ID..."
+                onChange={(event) => {
+                  setRoom(event.target.value);
+                }} />
+              <input
+                type="text"
+                placeholder="Name..."
+                onChange={(event) => {
+                  setUsername(event.target.value);
+                }}
+              />
+              <button className={isButtonClickable ? '' : 'disabled-button'} onClick={isButtonClickable ? handleButtonClick : undefined} >Start game</button>
+            </div>
+          </DndProvider>
+        } />
+      </Routes>
+    </Router>
+
   );
 }
 

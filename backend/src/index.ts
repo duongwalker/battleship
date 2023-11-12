@@ -150,7 +150,7 @@ io.on("connection", (socket) => {
         socket.to(roomId).emit('checkResult', event)
     })
 
-
+    
 })
 
 const games: GameStateMapType = {

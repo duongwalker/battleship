@@ -51,8 +51,8 @@ const OpponentShip: React.FC<ShipProps> = ({ id, url, width, location, shipRefs,
 
   return (
     <Draggable grid={[55, 55]} offsetParent={offsetParent} onMouseDown={(e) => e.preventDefault()} positionOffset={{ x: location[0] * 55, y: location[1] * 55 }} onStart={() => false}>
-      <span onContextMenu={(e) => e.preventDefault()}>
-        <img ref={shipRef} id={id} src={url} width={width} height={50} alt='board-1' style={{ border: "0px", transform: `rotate(${rotationAngle}deg)`, transformOrigin: `${width - 27.5}px 27.5px`, zIndex: 2 }} />
+      <span onContextMenu={(e) => e.preventDefault()} ref={shipRef}>
+        <img ref={shipRef} id={id} src={url} width={width} height={50} alt='board-1' style={{ border: "0px", transform: `rotate(${rotationAngle}deg)`, transformOrigin: `${27.5}px 27.5px`, transition: 'transform 5s', zIndex: 2 }} />
       </span>
     </Draggable>
   )
